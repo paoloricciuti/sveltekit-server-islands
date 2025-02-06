@@ -10,6 +10,7 @@
 		"islands"
 	],
 	"repository": {
+		"type": "git",
 		"url": "git+https://github.com/paoloricciuti/sveltekit-server-islands.git"
 	},
 	"scripts": {
