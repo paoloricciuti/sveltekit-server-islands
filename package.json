@@ -1,5 +1,5 @@
 {
-	"name": "sveltekit-islands",
+	"name": "sveltekit-server-islands",
 	"version": "0.0.4",
 	"scripts": {
 		"dev": "vite dev",
