@@ -18,9 +18,20 @@ const styles = /**
 );
 
 /**
- * @template {(...rest: any[])=>any} TData
+ * @template {(...rest: any[])=>any} [TData=()=>void]
  * @template {Record<string|symbol|number, unknown>} [TRest={}]
- * @typedef {{ fallback?: import("svelte").Snippet<[]>, data?: Awaited<ReturnType<TData>> } & TRest} ServerIslandProps
+ * @typedef {{ fallback?: import("svelte").Snippet<[]>, data?: Awaited<ReturnType<TData>> } & TRest } ServerIslandsProps
+ */
+
+/**
+ * @template {Record<string|symbol|number, unknown>} [TRest={}]
+ * @typedef {import("@sveltejs/kit").ServerLoadEvent & { props: TRest }} ServerIslandsEvent
+ */
+
+/**
+ * @template {(...rest: any[])=>any} [TData=()=>void]
+ * @template {Record<string|symbol|number, unknown>} [TRest={}]
+ * @typedef {{ props: ServerIslandsProps<TData, TRest>, event: ServerIslandsEvent<TRest> }} ServerIslands
  */
 
 /** @type {import('@sveltejs/kit').Handle} */
@@ -31,6 +42,31 @@ export async function handle({ event, resolve }) {
 		const comp = await components[`/src/islands/${name}.svelte`]();
 		const css = await styles[`/src/islands/${name}.svelte`]();
 		if (comp.load) {
+			// if there's a referer let's use it as the url since it's more correct
+			const referer = event.request.headers.get('referer');
+			if (referer) {
+				const url = new URL(referer);
+				Object.defineProperty(event.request, 'url', {
+					value: referer,
+					enumerable: true,
+					configurable: true
+				});
+				Object.defineProperty(event, 'url', {
+					value: url,
+					enumerable: true,
+					configurable: true
+				});
+			}
+			Object.defineProperty(event, 'props', {
+				configurable: true,
+				enumerable: true,
+				value: props
+			});
+			Object.defineProperty(event, 'route', {
+				get() {
+					throw new Error("You can't access the route in a Server Island");
+				}
+			});
 			props.data = await comp.load(event);
 		}
 		const { body } = render(comp.default, { props });
