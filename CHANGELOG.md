@@ -1,5 +1,11 @@
 # sveltekit-server-islands
 
+## 0.0.8
+
+### Patch Changes
+
+- fbaaf0e: fix: update `README`
+
 ## 0.0.7
 
 ### Patch Changes
