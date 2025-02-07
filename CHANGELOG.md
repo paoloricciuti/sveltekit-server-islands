@@ -1,5 +1,11 @@
 # sveltekit-server-islands
 
+## 0.0.7
+
+### Patch Changes
+
+- 8a250f3: feat: provide props and correct url in event
+
 ## 0.0.6
 
 ### Patch Changes
