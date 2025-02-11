@@ -166,3 +166,13 @@ The `ServerIslandsProps` type will also include another important type: a `fallb
 ```
 
 Note that if you need it you can pass other props to the component (and even update them after the component has been mounted)
+
+## `csr=false` or `csr=true`
+
+This library also works for both client side rendering set to `true` and to `false`. Since setting client side rendering to false will completely prevent svelte components scripts from executing during `build` and `dev` we also generate in the static folder a bundle for your islands.
+
+However if you decide to use `csr=false` there's some gotchas that you should be aware of:
+
+1. Your server islands will not be able to use any sveltekit import like `$app/page`, `$env/static/private` or even `$lib`
+2. While your server islands will be hydrated any other normal component will still have no interactivity
+3. For the above reason any feature that relies on non islands components is not available (like `setContext` and `getContext`)
