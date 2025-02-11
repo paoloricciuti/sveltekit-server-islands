@@ -1,19 +1,21 @@
 import { json } from '@sveltejs/kit';
 import { render } from 'svelte/server';
 
+// import all components in islands as "not-island": this will be the actual component
 const components = /**
  * @type {Record<string, ()=>Promise<{ default: import("svelte").Component, load?: (event: import("@sveltejs/kit").RequestEvent)=>unknown}>>}
  */ (
 	import.meta.glob('/src/islands/*.svelte', {
-		query: '?not-island'
+		query: '?not-island',
 	})
 );
 
+// import all components in islands as "not-island" and raw style: this will be the styles for that component
 const styles = /**
  * @type {Record<string, () => Promise<{ code: string; }>>}
  */ (
 	import.meta.glob('/src/islands/*.svelte', {
-		query: '?raw&svelte&type=style&not-island'
+		query: '?raw&svelte&type=style&not-island',
 	})
 );
 
@@ -36,6 +38,7 @@ const styles = /**
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
+	// we create an endpoint to return the server side rendered island
 	if (event.url.pathname === '/__island') {
 		const props = await event.request.json();
 		const name = event.url.searchParams.get('name');
@@ -49,30 +52,30 @@ export async function handle({ event, resolve }) {
 				Object.defineProperty(event.request, 'url', {
 					value: referer,
 					enumerable: true,
-					configurable: true
+					configurable: true,
 				});
 				Object.defineProperty(event, 'url', {
 					value: url,
 					enumerable: true,
-					configurable: true
+					configurable: true,
 				});
 			}
 			Object.defineProperty(event, 'props', {
 				configurable: true,
 				enumerable: true,
-				value: props
+				value: props,
 			});
 			Object.defineProperty(event, 'route', {
 				get() {
 					throw new Error("You can't access the route in a Server Island");
-				}
+				},
 			});
 			props.data = await comp.load(event);
 		}
 		const { body } = render(comp.default, { props });
 		return json({
 			body: `${body}${css.code ? `<style>${css.code}</style>` : ''}`,
-			data: props.data
+			data: props.data,
 		});
 	}
 	return resolve(event);
