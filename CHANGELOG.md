@@ -1,5 +1,11 @@
 # sveltekit-server-islands
 
+## 0.1.0
+
+### Minor Changes
+
+- 2894b39: feat: allow for server islands hydration with `csr=false`
+
 ## 0.0.8
 
 ### Patch Changes
